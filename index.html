@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Table Draw — Reveal Numbers</title>
+    <style>
+      :root {
+        --accent: #6a0c0c;
+        --bg: #fdf8f6;
+        --card: #ffffff;
+      }
+      body {
+        font-family: system-ui, -apple-system, Segoe UI, Roboto,
+          "Helvetica Neue", Arial;
+        margin: 0;
+        background: linear-gradient(#fdf5f4, #fff8f7);
+        color: #0b1220;
+      }
+      .wrap {
+        max-width: 980px;
+        margin: 28px auto;
+        padding: 18px;
+      }
+      header {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+      h1 {
+        margin: 0;
+        font-size: 22px;
+        font-family: Georgia, "Times New Roman", serif;
+        letter-spacing: 0.6px;
+      }
+      .controls-summary {
+        margin-top: 12px;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      input[type="file"] {
+        display: inline-block;
+      }
+      textarea {
+        width: 420px;
+        height: 120px;
+        border-radius: 8px;
+        border: 1px solid rgba(106, 12, 12, 0.08);
+        padding: 8px;
+        font-family: inherit;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: 240px 1fr;
+        gap: 12px;
+        margin-top: 18px;
+      }
+      .panel {
+        background: var(--card);
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 6px 18px rgba(11, 18, 32, 0.06);
+        border: 1px solid rgba(106, 12, 12, 0.06);
+      }
+      .list {
+        max-height: 520px;
+        overflow: auto;
+      }
+      .table-item {
+        padding: 8px;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-bottom: 6px;
+      }
+      .table-item:hover {
+        background: #fff6f6;
+      }
+      .table-item.active {
+        background: linear-gradient(90deg, var(--accent), #8a1414);
+        color: white;
+      }
+      .name-item {
+        padding: 8px;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-bottom: 6px;
+      }
+      .name-item:hover {
+        background: #fff7f7;
+      }
+      .name-item.selected {
+        background: rgba(106, 12, 12, 0.06);
+        border-left: 4px solid var(--accent);
+      }
+
+      .numbers-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+      }
+      .card {
+        width: 120px;
+        height: 56px;
+        border-radius: 8px;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        box-shadow: 0 6px 14px rgba(11, 18, 32, 0.06);
+        transform-origin: center;
+        backface-visibility: hidden;
+      }
+
+      /* spin reveal animation */
+      @keyframes spinReveal {
+        0% {
+          transform: rotateY(360deg) scale(0.2);
+          opacity: 0;
+        }
+        60% {
+          transform: rotateY(30deg) scale(1.08);
+          opacity: 1;
+        }
+        100% {
+          transform: rotateY(0deg) scale(1);
+          opacity: 1;
+        }
+      }
+      .card.hidden {
+        opacity: 0;
+        transform: rotateY(360deg) scale(0.2);
+      }
+      .card.visible {
+        animation: spinReveal 0.7s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+      }
+
+      footer {
+        margin-top: 18px;
+        font-size: 13px;
+        color: #3b4a5a;
+      }
+      .small {
+        font-size: 13px;
+        color: #546475;
+      }
+
+      /* Buttons */
+      .btn {
+        padding: 10px 14px;
+        border-radius: 8px;
+        background: var(--accent);
+        color: white;
+        border: 0;
+        cursor: pointer;
+      }
+      .btn.secondary {
+        background: #a63c3c;
+      }
+      .btn.green {
+        background: #3a9f5a;
+      }
+
+      /* Draw circular button (only draw button uses this) */
+      .btn.draw-circle {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        background: radial-gradient(circle, #8a1414, var(--accent));
+        box-shadow: 0 12px 28px rgba(106, 12, 12, 0.25);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+      }
+      .btn.draw-circle:hover {
+        transform: scale(1.06);
+        box-shadow: 0 18px 36px rgba(106, 12, 12, 0.32);
+      }
+
+      .set-title {
+        margin: 12px 0 6px;
+        color: var(--accent);
+        font-weight: 700;
+      }
+      .set-block {
+        padding: 10px;
+        border-radius: 10px;
+        background: linear-gradient(180deg, #fff, #fffaf9);
+        border: 1px solid rgba(106, 12, 12, 0.04);
+        margin-bottom: 10px;
+      }
+
+      /* wedding subtle flourishes */
+      header::after {
+        content: "";
+        display: block;
+        height: 1px;
+        background: linear-gradient(90deg, rgba(106, 12, 12, 0.1), transparent);
+        margin-top: 12px;
+      }
+
+      /* Wedding Guide Block */
+      .guide-block {
+        margin-top: 20px;
+        padding: 16px;
+        border-radius: 14px;
+        background: linear-gradient(180deg, #fff, #fff7f7);
+        border: 1px solid rgba(138, 20, 20, 0.1);
+      }
+      .guide-title {
+        font-size: 20px;
+        color: var(--accent);
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+      .guide-step {
+        margin: 6px 0;
+        padding-left: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <img
+          src="./header.JPG"
+          alt="Wedding Header"
+          style="
+            height: 80px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            margin-right: 12px;
+          "
+        />
+        <div>
+          <h1>Lucky 4D Draw — 囍 4D 抽獎系統 囍</h1>
+          <div
+            style="
+              font-size: 14px;
+              color: #7a4b4b;
+              font-family: Georgia, serif;
+              margin-top: 4px;
+            "
+          >
+            A special moment for our beloved guests
+          </div>
+        </div>
+      </header>
+
+      <!-- 🎉 Wedding Teaching Sample -->
+      <div class="guide-block">
+        <div class="guide-title">💡 婚禮抽獎教學</div>
+
+        <div class="guide-step">
+          ①「今天每位賓客都能抽取專屬的10個4D幸運號碼」。<br />
+          Everyone gets 10 lucky 4D numbers today!
+        </div>
+        <div class="guide-step">
+          ② 點選桌號 → 選擇您的名字。<br />Pick your table, choose your name.
+        </div>
+        <div class="guide-step">
+          ③ 按下圓形「DRAW」按鈕, 所有獎號會像翻牌一樣旋轉揭曉。<br />Hit the
+          round “DRAW” button — watch your numbers flip like magic!
+        </div>
+        <div class="guide-step">
+          ④ 拍下您的所屬號碼。 諾兩人以上的可以各自分配你們的組合號碼。<br />Snap
+          a pic of your numbers. If you're a group, feel free to divide or
+          combine your numbers as you like.
+        </div>
+        <div class="guide-step">
+          ⑤ 稍後會揭曉若該組號碼內有中獎的數字，即可請賓客上台或前往兌獎區。<br />
+          When winning numbers are announced, come on stage or head to the prize
+          table to claim your reward!
+        </div>
+
+        <div style="margin-top: 10px; font-size: 17px; color: #7a4b4b">
+          🎀 可以掃碼送上您的祝福語。<br />
+          You may also scan the QR code to send your blessings.
+        </div>
+
+        <div style="text-align: center; margin-top: 12px">
+          <img
+            src="./qr.png"
+            alt="QR Code"
+            style="
+              width: 160px;
+              height: auto;
+              border-radius: 8px;
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            "
+          />
+        </div>
+      </div>
+
+      <div class="layout">
+        <aside class="panel">
+          <h3 style="margin-top: 0">Tables</h3>
+          <div id="tablesList" class="list">
+            Loading JSON or open the upload dropdown to add data.
+          </div>
+        </aside>
+
+        <main class="panel">
+          <h3 style="margin-top: 0">Names & Draw</h3>
+          <div id="namesList" class="list"></div>
+
+          <div style="margin-top: 14px">
+            <h4 id="selectedNameHeader">Select a name to reveal numbers</h4>
+            <div id="drawControls" style="margin-top: 8px"></div>
+            <div id="numbersArea"></div>
+          </div>
+        </main>
+      </div>
+
+      <footer>Good Luck!</footer>
+
+      <!-- Upload / paste JSON is optional and hidden inside details -->
+      <details style="margin-top: 12px">
+        <summary
+          style="
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 8px;
+            background: var(--accent);
+            color: white;
+            width: max-content;
+            opacity: 0;
+          "
+        >
+          Settings
+        </summary>
+
+        <div class="controls-summary" style="margin-top: 10px">
+          <input id="fileInput" type="file" accept="application/json" />
+          <button id="clearBtn" class="btn secondary">Clear stored data</button>
+          <button id="downloadBtn" class="btn green">
+            Download current JSON
+          </button>
+        </div>
+
+        <div style="margin-top: 12px; display: flex; gap: 12px">
+          <textarea
+            id="pasteArea"
+            placeholder='Or paste JSON here then click "Load JSON"'
+          ></textarea>
+          <div style="display: flex; flex-direction: column; gap: 8px">
+            <button id="loadPaste" class="btn">Load JSON</button>
+            <div class="info">
+              JSON structure expected: { "Name": {
+              "table":"X","sets":[[...],[...]] }, ... }
+            </div>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <script>
+      (function () {
+        const fileInput = document.getElementById("fileInput");
+        const pasteArea = document.getElementById("pasteArea");
+        const loadPaste = document.getElementById("loadPaste");
+        const tablesList = document.getElementById("tablesList");
+        const namesList = document.getElementById("namesList");
+        const numbersArea = document.getElementById("numbersArea");
+        const selectedNameHeader =
+          document.getElementById("selectedNameHeader");
+        const drawControls = document.getElementById("drawControls");
+        const clearBtn = document.getElementById("clearBtn");
+        const downloadBtn = document.getElementById("downloadBtn");
+
+        let data = null; // loaded JSON
+        let tables = [];
+        let currentTable = null;
+        let currentName = null;
+
+        function loadData(obj) {
+          data = obj;
+          localStorage.setItem("assignments", JSON.stringify(data));
+          buildTables();
+        }
+
+        const stored = localStorage.getItem("assignments");
+        if (stored) {
+          try {
+            loadData(JSON.parse(stored));
+          } catch (e) {
+            console.warn("Invalid stored JSON");
+          }
+        } else {
+          tablesList.innerHTML =
+            "No data loaded. Use Upload / Paste JSON to load assignments.";
+        }
+
+        fileInput.addEventListener("change", (ev) => {
+          const f = ev.target.files[0];
+          if (!f) return;
+          const reader = new FileReader();
+          reader.onload = () => {
+            try {
+              const parsed = JSON.parse(reader.result);
+              loadData(parsed);
+              alert("JSON loaded successfully");
+            } catch (e) {
+              alert("Invalid JSON file");
+            }
+          };
+          reader.readAsText(f);
+        });
+
+        loadPaste.addEventListener("click", () => {
+          const txt = pasteArea.value.trim();
+          if (!txt) return alert("Paste JSON into the box first");
+          try {
+            const parsed = JSON.parse(txt);
+            loadData(parsed);
+            alert("JSON loaded");
+          } catch (e) {
+            alert("Invalid JSON");
+          }
+        });
+
+        clearBtn.addEventListener("click", () => {
+          if (confirm("Clear stored data?")) {
+            localStorage.removeItem("assignments");
+            data = null;
+            tablesList.innerHTML =
+              "No data loaded. Use Upload / Paste JSON to load assignments.";
+            namesList.innerHTML = "";
+            numbersArea.innerHTML = "";
+            selectedNameHeader.textContent = "Select a name to reveal numbers";
+            drawControls.innerHTML = "";
+          }
+        });
+
+        downloadBtn.addEventListener("click", () => {
+          if (!data) return alert("No data loaded");
+          const blob = new Blob([JSON.stringify(data, null, 2)], {
+            type: "application/json",
+          });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "final_assignments.json";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+        });
+
+        function buildTables() {
+          if (!data) {
+            tablesList.innerHTML = "No data loaded.";
+            return;
+          }
+          const map = {};
+          for (const [name, entry] of Object.entries(data)) {
+            const table = String(entry.table ?? entry.table_number ?? "N/A");
+            if (!map[table]) map[table] = [];
+            map[table].push(name);
+          }
+          tables = Object.keys(map).sort((a, b) => {
+            const an = Number(a),
+              bn = Number(b);
+            if (!Number.isNaN(an) && !Number.isNaN(bn)) return an - bn;
+            return a.localeCompare(b);
+          });
+
+          tablesList.innerHTML = "";
+          tables.forEach((t) => {
+            const el = document.createElement("div");
+            el.className = "table-item";
+            el.textContent = `${t} — ${map[t].length} name(s)`;
+            el.addEventListener("click", () => {
+              selectTable(t, map[t]);
+              highlightTable(el);
+            });
+            tablesList.appendChild(el);
+          });
+
+          if (tables.length) selectTable(tables[0], map[tables[0]]);
+        }
+
+        function highlightTable(el) {
+          Array.from(tablesList.children).forEach((c) =>
+            c.classList.remove("active")
+          );
+          el.classList.add("active");
+        }
+
+        function selectTable(table, names) {
+          currentTable = table;
+          currentName = null;
+          namesList.innerHTML = "";
+          names
+            .sort((a, b) => a.localeCompare(b))
+            .forEach((n) => {
+              const div = document.createElement("div");
+              div.className = "name-item";
+              div.textContent = n;
+              div.addEventListener("click", () => {
+                selectName(n, div);
+              });
+              namesList.appendChild(div);
+            });
+          numbersArea.innerHTML = "";
+          selectedNameHeader.textContent = `Select a name at table ${table}`;
+          drawControls.innerHTML = "";
+        }
+
+        function selectName(name, el) {
+          currentName = name;
+          Array.from(namesList.children).forEach((c) =>
+            c.classList.remove("selected")
+          );
+          el.classList.add("selected");
+          selectedNameHeader.textContent = `${name}`;
+          numbersArea.innerHTML = "";
+          drawControls.innerHTML = "";
+          const entry = data[name];
+          if (!entry) {
+            numbersArea.textContent = "No data for this name";
+            return;
+          }
+
+          // create themed draw button
+          const drawBtn = document.createElement("button");
+          drawBtn.textContent = "Draw";
+          drawBtn.className = "btn draw-circle";
+          drawControls.appendChild(drawBtn);
+
+          drawBtn.addEventListener("click", () => {
+            drawControls.innerHTML = "";
+            revealNumbers(name);
+          });
+        }
+
+        // revealNumbers
+        function revealNumbers(name) {
+          const entry = data[name];
+          if (!entry) {
+            numbersArea.textContent = "No data for this name";
+            return;
+          }
+          const allNums = (entry.sets || []).flat();
+          const chunked = [];
+          for (let i = 0; i < allNums.length; i += 10) {
+            chunked.push(allNums.slice(i, i + 10));
+          }
+          numbersArea.innerHTML = "";
+
+          chunked.forEach((set, si) => {
+            const title = document.createElement("h4");
+            title.className = "set-title";
+            title.textContent = `Set ${si + 1}`;
+            numbersArea.appendChild(title);
+
+            const block = document.createElement("div");
+            block.className = "set-block";
+            numbersArea.appendChild(block);
+
+            const grid = document.createElement("div");
+            grid.className = "numbers-grid";
+            block.appendChild(grid);
+
+            set.forEach((num, idx) => {
+              const card = document.createElement("div");
+              card.className = "card hidden";
+              card.textContent = "----";
+              grid.appendChild(card);
+
+              setTimeout(() => {
+                card.classList.remove("hidden");
+                card.classList.add("visible");
+                let spins = 15 + Math.floor(Math.random() * 10);
+                const spinInterval = setInterval(() => {
+                  card.textContent = Math.floor(1000 + Math.random() * 9000);
+                  spins--;
+                  if (spins <= 0) {
+                    clearInterval(spinInterval);
+                    card.textContent = num;
+                    card.classList.add("revealed");
+                  }
+                }, 60);
+              }, 200 + si * 800 + idx * 150);
+            });
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>
