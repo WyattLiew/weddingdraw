@@ -221,6 +221,65 @@
         margin: 6px 0;
         padding-left: 10px;
       }
+      @media (max-width: 768px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+
+        header {
+          flex-direction: column;
+          text-align: center;
+        }
+
+        header img {
+          height: 70px;
+          margin-right: 0;
+        }
+
+        h1 {
+          font-size: 20px;
+        }
+
+        .wrap {
+          padding: 14px;
+        }
+      }
+      @media (max-width: 600px) {
+        .card {
+          width: 90px;
+          height: 48px;
+          font-size: 14px;
+        }
+
+        .numbers-grid {
+          gap: 6px;
+        }
+      }
+      @media (max-width: 600px) {
+        .guide-block {
+          padding: 12px;
+        }
+
+        .guide-title {
+          font-size: 18px;
+        }
+
+        .guide-step {
+          font-size: 14px;
+        }
+      }
+      @media (max-width: 600px) {
+        .list {
+          max-height: 300px;
+        }
+      }
+      @media (max-width: 600px) {
+        .btn.draw-circle {
+          width: 90px;
+          height: 90px;
+          font-size: 16px;
+        }
+      }
     </style>
   </head>
   <body>
@@ -279,7 +338,7 @@
 
         <div style="margin-top: 10px; font-size: 17px; color: #7a4b4b">
           🎀 可以掃碼送上您的祝福語。<br />
-          You may also scan the QR code to send your blessings.
+          💌 You may also scan the QR code to share your heartfelt blessings.
         </div>
 
         <div style="text-align: center; margin-top: 12px">
