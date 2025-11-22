@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Table Draw — Reveal Numbers</title>
+    <title>囍 Lucky Draw 囍</title>
     <style>
       :root {
         --accent: #6a0c0c;
@@ -114,7 +114,24 @@
         backface-visibility: hidden;
       }
 
-      /* spin reveal animation */
+      /* digit-specific card (circle) */
+      .digit-card {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: white;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 22px;
+        box-shadow: 0 8px 18px rgba(11, 18, 32, 0.07);
+        margin-right: 8px;
+        transform-origin: center;
+        backface-visibility: hidden;
+      }
+
+      /* spin reveal animation (appearance) */
       @keyframes spinReveal {
         0% {
           transform: rotateY(360deg) scale(0.2);
@@ -129,13 +146,15 @@
           opacity: 1;
         }
       }
-      .card.hidden {
+      .digit-card.hidden {
         opacity: 0;
         transform: rotateY(360deg) scale(0.2);
       }
-      .card.visible {
-        animation: spinReveal 0.7s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+      .digit-card.visible {
+        animation: spinReveal 0.5s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
       }
+
+      /* small "spinner" text effect handled in JS (replacing content) */
 
       footer {
         margin-top: 18px;
@@ -163,22 +182,8 @@
         background: #3a9f5a;
       }
 
-      /* Draw circular button (only draw button uses this) */
-      .btn.draw-circle {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 18px;
-        background: radial-gradient(circle, #8a1414, var(--accent));
-        box-shadow: 0 12px 28px rgba(106, 12, 12, 0.25);
-        transition: transform 0.25s ease, box-shadow 0.25s ease;
-      }
-      .btn.draw-circle:hover {
-        transform: scale(1.06);
-        box-shadow: 0 18px 36px rgba(106, 12, 12, 0.32);
+      .btn.draw {
+        min-width: 120px;
       }
 
       .set-title {
@@ -194,168 +199,61 @@
         margin-bottom: 10px;
       }
 
-      /* wedding subtle flourishes */
-      header::after {
-        content: "";
-        display: block;
-        height: 1px;
-        background: linear-gradient(90deg, rgba(106, 12, 12, 0.1), transparent);
-        margin-top: 12px;
+      /* .prize-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.04);
       }
+      .prize-left {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      } */
+      .prize-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
 
-      /* Wedding Guide Block */
-      .guide-block {
-        margin-top: 20px;
-        padding: 16px;
+        padding: 14px 18px;
+        margin: 8px 0;
+
+        background: linear-gradient(135deg, #fff7f5 0%, #fffdfb 100%);
+        border: 1px solid rgba(210, 180, 160, 0.25);
         border-radius: 14px;
-        background: linear-gradient(180deg, #fff, #fff7f7);
-        border: 1px solid rgba(138, 20, 20, 0.1);
-      }
-      .guide-title {
-        font-size: 20px;
-        color: var(--accent);
-        font-weight: 700;
-        margin-bottom: 8px;
-      }
-      .guide-step {
-        margin: 6px 0;
-        padding-left: 10px;
+
+        box-shadow: 0 3px 10px rgba(150, 90, 60, 0.08);
+
+        transition: transform 0.2s ease, box-shadow 0.3s ease;
       }
 
-      /* Namespaced with .result- to avoid conflicts */
-      .result-card {
-        background: var(--card);
-        border-radius: var(--radius);
-        box-shadow: 0 6px 20px rgba(106, 12, 12, 0.08);
-        padding: 24px;
-        max-width: 720px;
-        border-radius: 10px;
-        border: 1px solid rgba(106, 12, 12, 0.06);
-      }
-      .result-title {
-        display: flex;
-        gap: 12px;
-        align-items: center;
-        font-weight: 700;
-        color: var(--accent);
-        font-size: 18px;
-      }
-      .result-title .star {
-        font-size: 20px;
-      }
-      .result-text {
-        margin-top: 12px;
-        color: #333;
-        line-height: 1.5;
-        font-size: 15px;
-      }
-      .result-line {
-        display: flex;
-        gap: 12px;
-        align-items: flex-start;
-        margin-top: 10px;
-      }
-      .result-bullet {
-        width: 34px;
-        height: 34px;
-        border-radius: 10px;
-        background: #fff;
-        border: 1px solid rgba(106, 12, 12, 0.06);
+      .prize-left {
         display: flex;
         align-items: center;
-        justify-content: center;
-        color: var(--accent);
-        font-weight: 700;
-      }
-      .result-zh {
+        gap: 14px;
+
+        color: #6a0c0c; /* Deep wedding red */
         font-weight: 600;
+        font-size: 1.05rem;
       }
-      .result-en {
-        margin-top: 6px;
-        color: var(--muted);
-        font-size: 13px;
+
+      /* Optional: add a small gold shimmer icon */
+      .prize-left .icon {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: radial-gradient(circle, #f8e7bd, #e6c98f);
+        box-shadow: 0 0 6px rgba(230, 200, 140, 0.6);
       }
 
       @media (max-width: 600px) {
-        .result-card {
-          padding: 16px;
-        }
-        .result-title {
-          font-size: 16px;
-        }
-        .result-text {
-          font-size: 14px;
-        }
-        .result-line {
-          gap: 10px;
-        }
-        .result-bullet {
-          width: 28px;
-          height: 28px;
-          font-size: 13px;
-        }
-        .result-en {
-          font-size: 12px;
-        }
-      }
-
-      @media (max-width: 768px) {
-        .layout {
-          grid-template-columns: 1fr;
-        }
-
-        header {
-          flex-direction: column;
-          text-align: center;
-        }
-
-        header img {
-          height: 70px;
-          margin-right: 0;
-        }
-
-        h1 {
-          font-size: 20px;
-        }
-
-        .wrap {
-          padding: 14px;
-        }
-      }
-      @media (max-width: 600px) {
-        .card {
-          width: 90px;
-          height: 48px;
-          font-size: 14px;
-        }
-
-        .numbers-grid {
-          gap: 6px;
-        }
-      }
-      @media (max-width: 600px) {
-        .guide-block {
-          padding: 12px;
-        }
-
-        .guide-title {
+        .digit-card {
+          width: 58px;
+          height: 58px;
           font-size: 18px;
-        }
-
-        .guide-step {
-          font-size: 14px;
-        }
-      }
-      @media (max-width: 600px) {
-        .list {
-          max-height: 300px;
-        }
-      }
-      @media (max-width: 600px) {
-        .btn.draw-circle {
-          width: 90px;
-          height: 90px;
-          font-size: 16px;
         }
       }
     </style>
@@ -369,12 +267,12 @@
           style="
             height: 100px;
             border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             margin-right: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
           "
         />
         <div>
-          <h1>Lucky 4D Draw — 囍 4D 抽獎系統 囍</h1>
+          <h1>Lucky Draw — 囍 抽獎系統 囍</h1>
           <div
             style="
               font-size: 14px;
@@ -388,13 +286,12 @@
         </div>
       </header>
 
-      <!-- 🎉 Wedding Teaching Sample -->
-      <div class="guide-block">
+      <!-- Guide block -->
+      <div class="guide-block" style="margin-top: 18px">
         <div class="guide-title">💡 婚禮抽獎教學</div>
-
         <div class="guide-step">
-          ①「今天每位賓客都能抽取專屬的10個4D幸運號碼」。<br />
-          Everyone gets 10 lucky 4D numbers today!
+          ①「今天每位賓客都能抽取專屬的10個幸運號碼」。<br />Everyone gets 10
+          lucky numbers today!
         </div>
         <div class="guide-step">
           ② 點選桌號 → 選擇您的名字。<br />Pick your table, choose your name.
@@ -403,83 +300,19 @@
           ③ 按下圓形「DRAW」按鈕, 所有獎號會像翻牌一樣旋轉揭曉。<br />Hit the
           round “DRAW” button — watch your numbers flip like magic!
         </div>
-        <div class="guide-step">
-          ④ 拍下您的所屬號碼。 諾兩人以上的可以各自分配你們的組合號碼。<br />Snap
-          a pic of your numbers. If you're a group, feel free to divide or
-          combine your numbers as you like.
-        </div>
-        <div class="guide-step">
-          ⑤ 稍後會揭曉若該組號碼內有中獎的數字，即可請賓客上台或前往兌獎區。<br />
-          When winning numbers are announced, come on stage or head to the prize
-          table to claim your reward!
-        </div>
-
-        <div class="result-card" role="region" aria-label="Lucky draw results">
-          <div class="result-title">
-            <div class="star">⭐</div>
-            <div>成績與對獎說明</div>
-          </div>
-
-          <div class="result-text">
-            <div class="result-line">
-              <div class="result-bullet">1</div>
-              <div>
-                <div class="result-zh">
-                  成績依據當日4D平台公布之獎項: 頭獎,二獎,三獎,以及安慰/入圍獎。
-                </div>
-                <div class="result-en">
-                  Results follow the 4D platform's official prizes — 1st, 2nd,
-                  3rd, and Consolation/Runner-up.
-                </div>
-              </div>
-            </div>
-
-            <div class="result-line">
-              <div class="result-bullet">2</div>
-              <div>
-                <div class="result-zh">
-                  所有賓客抽完後,我們會以當日4D開獎結果對照您手上的10個號碼;若有任一號碼相符,即為中獎。
-                </div>
-                <div class="result-en">
-                  After all draws, we'll match each guest's 10 numbers to that
-                  day's 4D results. Any match wins.
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div style="margin-top: 10px; font-size: 17px; color: #7a4b4b">
-          🎀 可以掃碼送上您的祝福語。<br />
-          💌 You may also scan the QR code to share your heartfelt blessings.
-        </div>
-
-        <div style="text-align: center; margin-top: 12px">
-          <img
-            src="./qr.png"
-            alt="QR Code"
-            style="
-              width: 160px;
-              height: auto;
-              border-radius: 8px;
-              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            "
-          />
-        </div>
       </div>
 
-      <div class="layout">
+      <div class="layout" style="margin-top: 18px">
         <aside class="panel">
           <h3 style="margin-top: 0">Tables</h3>
           <div id="tablesList" class="list">
-            Loading JSON or open the upload dropdown to add data.
+            No data loaded. Use Upload / Paste JSON to load assignments.
           </div>
         </aside>
 
         <main class="panel">
           <h3 style="margin-top: 0">Names & Draw</h3>
           <div id="namesList" class="list"></div>
-
           <div style="margin-top: 14px">
             <h4 id="selectedNameHeader">Select a name to reveal numbers</h4>
             <div id="drawControls" style="margin-top: 8px"></div>
@@ -489,42 +322,57 @@
       </div>
 
       <footer>Good Luck!</footer>
+
+      <!--  Winning Results Display -->
       <div
         style="
-          margin-bottom: 12px;
+          margin: 16px 0;
           padding: 10px;
           background: #fffaf9;
           border: 1px solid rgba(106, 12, 12, 0.08);
           border-radius: 10px;
-          margin-top: 10px;
         "
       >
-        <div style="font-weight: 700; color: var(--accent); margin-bottom: 6px">
-          Search Number
-        </div>
-        <input
-          id="searchInput"
-          type="text"
-          placeholder="Enter 4D number (e.g. 1234)"
-          style="
-            padding: 8px;
-            width: 160px;
-            border-radius: 8px;
-            border: 1px solid rgba(106, 12, 12, 0.2);
-          "
-        />
-        <button id="searchBtn" class="btn" style="margin-left: 8px">
-          Search
-        </button>
-
-        <div
-          id="searchResults"
-          style="margin-top: 10px; font-size: 14px; color: #7a4b4b"
-        ></div>
+        <!-- Winning Results list shows here -->
+        <div id="winningResultsContainer" style="margin-top: 16px"></div>
       </div>
 
-      <!-- Upload / paste JSON is optional and hidden inside details -->
+      <!-- Settings dropdown -->
       <details style="margin-top: 12px">
+        <!-- Search -->
+        <div
+          style="
+            margin: 16px 0;
+            padding: 10px;
+            background: #fffaf9;
+            border: 1px solid rgba(106, 12, 12, 0.08);
+            border-radius: 10px;
+          "
+        >
+          <div
+            style="font-weight: 700; color: var(--accent); margin-bottom: 6px"
+          >
+            Search Number
+          </div>
+          <input
+            id="searchInput"
+            type="text"
+            placeholder="Enter number (e.g. 1234)"
+            style="
+              padding: 8px;
+              width: 160px;
+              border-radius: 8px;
+              border: 1px solid rgba(106, 12, 12, 0.2);
+            "
+          />
+          <button id="searchBtn" class="btn" style="margin-left: 8px">
+            Search
+          </button>
+          <div
+            id="searchResults"
+            style="margin-top: 10px; font-size: 14px; color: #7a4b4b"
+          ></div>
+        </div>
         <summary
           style="
             cursor: pointer;
@@ -550,7 +398,7 @@
         <div style="margin-top: 12px; display: flex; gap: 12px">
           <textarea
             id="pasteArea"
-            placeholder='Or paste JSON here then click "Load JSON"'
+            placeholder='Or paste assignments JSON here then click "Load JSON"'
           ></textarea>
           <div style="display: flex; flex-direction: column; gap: 8px">
             <button id="loadPaste" class="btn">Load JSON</button>
@@ -560,11 +408,46 @@
             </div>
           </div>
         </div>
+
+        <!-- Winning Results JSON editor -->
+        <div
+          style="
+            margin-top: 14px;
+            border-top: 1px dashed rgba(0, 0, 0, 0.04);
+            padding-top: 12px;
+          "
+        >
+          <div
+            style="font-weight: 700; color: var(--accent); margin-bottom: 8px"
+          >
+            Winning Results (JSON)
+          </div>
+          <textarea
+            id="winningResultsInput"
+            placeholder='Paste winning results JSON here (array):\n[\n  { "price": 2000, "number": "????" },\n  { "price": 500, "number": "????" }\n]'
+            style="width: 100%; height: 120px"
+          ></textarea>
+          <div style="display: flex; gap: 8px; margin-top: 8px">
+            <button id="saveWinningBtn" class="btn">
+              Save Winning Results
+            </button>
+            <button id="clearWinningBtn" class="btn secondary">
+              Clear Winning Results
+            </button>
+            <button id="downloadWinningBtn" class="btn green">
+              Download Winning JSON
+            </button>
+          </div>
+          <div style="margin-top: 8px; color: #6b4b4b; font-size: 13px">
+            Saved to localStorage key <code>winningResults</code>.
+          </div>
+        </div>
       </details>
     </div>
 
     <script>
       (function () {
+        // Elements
         const fileInput = document.getElementById("fileInput");
         const pasteArea = document.getElementById("pasteArea");
         const loadPaste = document.getElementById("loadPaste");
@@ -577,12 +460,34 @@
         const clearBtn = document.getElementById("clearBtn");
         const downloadBtn = document.getElementById("downloadBtn");
 
-        let data = null; // loaded JSON
+        const winningResultsInput = document.getElementById(
+          "winningResultsInput"
+        );
+        const saveWinningBtn = document.getElementById("saveWinningBtn");
+        const clearWinningBtn = document.getElementById("clearWinningBtn");
+        const downloadWinningBtn =
+          document.getElementById("downloadWinningBtn");
+        const winningResultsContainer = document.getElementById(
+          "winningResultsContainer"
+        );
+
+        const searchInput = document.getElementById("searchInput");
+        const searchBtn = document.getElementById("searchBtn");
+        const searchResults = document.getElementById("searchResults");
+
+        // State
+        let data = null; // assignments
         let tables = [];
         let currentTable = null;
         let currentName = null;
 
-        function loadData(obj) {
+        // Timing specification (final confirmed): reveal timeline (ms)
+        const revealDelays = [2000, 2000, 2000, 2000]; // reveal1 at 2s, reveal2 at 4s, reveal3 at 7s, reveal4 at 7s
+
+        // -------------------------
+        // Assignments loading / saving
+        // -------------------------
+        function loadAssignments(obj) {
           data = obj;
           localStorage.setItem("assignments", JSON.stringify(data));
           buildTables();
@@ -591,7 +496,7 @@
         const stored = localStorage.getItem("assignments");
         if (stored) {
           try {
-            loadData(JSON.parse(stored));
+            loadAssignments(JSON.parse(stored));
           } catch (e) {
             console.warn("Invalid stored JSON");
           }
@@ -607,8 +512,8 @@
           reader.onload = () => {
             try {
               const parsed = JSON.parse(reader.result);
-              loadData(parsed);
-              alert("JSON loaded successfully");
+              loadAssignments(parsed);
+              alert("Assignments JSON loaded successfully");
             } catch (e) {
               alert("Invalid JSON file");
             }
@@ -621,24 +526,23 @@
           if (!txt) return alert("Paste JSON into the box first");
           try {
             const parsed = JSON.parse(txt);
-            loadData(parsed);
-            alert("JSON loaded");
+            loadAssignments(parsed);
+            alert("Assignments JSON loaded");
           } catch (e) {
             alert("Invalid JSON");
           }
         });
 
         clearBtn.addEventListener("click", () => {
-          if (confirm("Clear stored data?")) {
-            localStorage.removeItem("assignments");
-            data = null;
-            tablesList.innerHTML =
-              "No data loaded. Use Upload / Paste JSON to load assignments.";
-            namesList.innerHTML = "";
-            numbersArea.innerHTML = "";
-            selectedNameHeader.textContent = "Select a name to reveal numbers";
-            drawControls.innerHTML = "";
-          }
+          if (!confirm("Clear stored assignments?")) return;
+          localStorage.removeItem("assignments");
+          data = null;
+          tablesList.innerHTML =
+            "No data loaded. Use Upload / Paste JSON to load assignments.";
+          namesList.innerHTML = "";
+          numbersArea.innerHTML = "";
+          selectedNameHeader.textContent = "Select a name to reveal numbers";
+          drawControls.innerHTML = "";
         });
 
         downloadBtn.addEventListener("click", () => {
@@ -656,6 +560,7 @@
           URL.revokeObjectURL(url);
         });
 
+        // Build tables
         function buildTables() {
           if (!data) {
             tablesList.innerHTML = "No data loaded.";
@@ -706,9 +611,7 @@
               const div = document.createElement("div");
               div.className = "name-item";
               div.textContent = n;
-              div.addEventListener("click", () => {
-                selectName(n, div);
-              });
+              div.addEventListener("click", () => selectName(n, div));
               namesList.appendChild(div);
             });
           numbersArea.innerHTML = "";
@@ -731,19 +634,17 @@
             return;
           }
 
-          // create themed draw button
           const drawBtn = document.createElement("button");
           drawBtn.textContent = "Draw";
-          drawBtn.className = "btn draw-circle";
+          drawBtn.className = "btn draw draw-circle";
           drawControls.appendChild(drawBtn);
-
           drawBtn.addEventListener("click", () => {
             drawControls.innerHTML = "";
             revealNumbers(name);
           });
         }
 
-        // revealNumbers
+        // revealNumbers (individual guest 10 numbers) - unchanged behavior
         function revealNumbers(name) {
           const entry = data[name];
           if (!entry) {
@@ -752,9 +653,8 @@
           }
           const allNums = (entry.sets || []).flat();
           const chunked = [];
-          for (let i = 0; i < allNums.length; i += 10) {
+          for (let i = 0; i < allNums.length; i += 10)
             chunked.push(allNums.slice(i, i + 10));
-          }
           numbersArea.innerHTML = "";
 
           chunked.forEach((set, si) => {
@@ -795,21 +695,17 @@
           });
         }
 
-        // ==============================
-        // 🔍 NUMBER SEARCH FEATURE
-        // ==============================
-        const searchInput = document.getElementById("searchInput");
-        const searchBtn = document.getElementById("searchBtn");
-        const searchResults = document.getElementById("searchResults");
-
+        // -------------------------
+        // Search
+        // -------------------------
         if (searchBtn) {
           searchBtn.addEventListener("click", () => {
-            const query = searchInput.value.trim();
-            if (!query || query.length < 1) {
+            const q = searchInput.value.trim();
+            if (!q || q.length < 1) {
               searchResults.textContent = "Please enter a number.";
               return;
             }
-            searchNumber(query);
+            searchNumber(q);
           });
         }
 
@@ -818,43 +714,314 @@
             searchResults.textContent = "No data loaded.";
             return;
           }
-
           const matches = [];
-
           for (const [name, entry] of Object.entries(data)) {
             if (!entry.sets) continue;
-
-            // Check all sets
             for (let i = 0; i < entry.sets.length; i++) {
               const set = entry.sets[i];
-              if (set.includes(parseInt(num))) {
+              if (set.includes(parseInt(num)))
                 matches.push({
                   name,
                   table: entry.table ?? "N/A",
                   setIndex: i + 1,
                 });
-              }
             }
           }
-
           if (matches.length === 0) {
             searchResults.innerHTML = `<span style="color:#a63c3c">No matches found.</span>`;
             return;
           }
-
-          // Build results
           let html = `<div style="font-weight:700; margin-bottom:6px;">Matched Guest(s):</div>`;
           html += matches
             .map(
               (m) =>
-                `<div style="padding:6px 0; border-bottom:1px solid rgba(0,0,0,0.06);">
-          <strong>${m.name}</strong> (Table ${m.table}) — Set ${m.setIndex}
-        </div>`
+                `<div style="padding:6px 0; border-bottom:1px solid rgba(0,0,0,0.06);"><strong>${m.name}</strong> (Table ${m.table}) — Set ${m.setIndex}</div>`
             )
             .join("");
-
           searchResults.innerHTML = html;
         }
+
+        // -------------------------
+        // Winning Results (prizes)
+        // -------------------------
+        function loadWinningResultsFromStorage() {
+          const raw = localStorage.getItem("winningResults");
+          if (!raw) {
+            winningResultsInput.value = "";
+            renderWinningResults([]);
+            return;
+          }
+          try {
+            const parsed = JSON.parse(raw);
+            winningResultsInput.value = JSON.stringify(parsed, null, 2);
+            renderWinningResults(parsed);
+          } catch (e) {
+            winningResultsInput.value = "";
+            renderWinningResults([]);
+          }
+        }
+
+        saveWinningBtn.addEventListener("click", () => {
+          const txt = winningResultsInput.value.trim();
+          if (!txt)
+            return alert("Paste winning results JSON into the box first");
+          try {
+            const parsed = JSON.parse(txt);
+            if (!Array.isArray(parsed)) {
+              alert("Winning results JSON must be an array of objects");
+              return;
+            }
+            parsed.forEach((p) => {
+              p.number = String(p.number);
+            });
+            localStorage.setItem("winningResults", JSON.stringify(parsed));
+            // when saving new winning results, clear previous prizeResults so they start fresh
+            localStorage.removeItem("prizeResults");
+
+            renderWinningResults(parsed);
+            alert("Winning results saved (previous results cleared)");
+          } catch (e) {
+            alert("Invalid JSON");
+          }
+        });
+
+        clearWinningBtn.addEventListener("click", () => {
+          if (
+            !localStorage.getItem("winningResults") &&
+            !localStorage.getItem("prizeResults")
+          )
+            return;
+          if (
+            !confirm(
+              "Clear saved winning results and previous prize results? This will reset prize UI to [----]."
+            )
+          )
+            return;
+          localStorage.removeItem("winningResults");
+          localStorage.removeItem("prizeResults");
+          winningResultsInput.value = "";
+          renderWinningResults([]);
+        });
+
+        downloadWinningBtn.addEventListener("click", () => {
+          const raw = localStorage.getItem("winningResults");
+          if (!raw) return alert("No winning results saved");
+          const blob = new Blob([raw], { type: "application/json" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "winning_results.json";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+        });
+
+        // prizeResults helpers (save/load)
+        function loadPrizeResultsFromStorage() {
+          const raw = localStorage.getItem("prizeResults");
+          if (!raw) return {};
+          try {
+            return JSON.parse(raw);
+          } catch {
+            return {};
+          }
+        }
+        function savePrizeResult(index, numberStr) {
+          const obj = loadPrizeResultsFromStorage();
+          obj[index] = String(numberStr);
+          localStorage.setItem("prizeResults", JSON.stringify(obj));
+        }
+
+        // collect all assigned numbers from assignments
+        function collectAssignedNumbers() {
+          const arr = [];
+          if (!data) return arr;
+          for (const [name, entry] of Object.entries(data)) {
+            if (!entry.sets) continue;
+            for (const set of entry.sets) {
+              for (const val of set) arr.push(String(val));
+            }
+          }
+          return arr;
+        }
+
+        // Core: renderWinningResults
+        function renderWinningResults(list) {
+          winningResultsContainer.innerHTML = "";
+          if (!list || !list.length) {
+            winningResultsContainer.innerHTML = `<div style="color:#6b4b4b">Thank you!</div>`;
+            return;
+          }
+
+          const savedPrizeResults = loadPrizeResultsFromStorage();
+
+          list.forEach((item, idx) => {
+            const row = document.createElement("div");
+            row.className = "prize-row";
+
+            const left = document.createElement("div");
+            left.className = "prize-left";
+            const label = document.createElement("div");
+            label.style.fontWeight = "700";
+            label.textContent = `Price - ${item.price}`;
+
+            const digitsWrap = document.createElement("div");
+            digitsWrap.className = "digit-row";
+            digitsWrap.id = `winning-digits-${idx}`;
+
+            // Determine display value: if savedPrizeResults has value, show digits; else show placeholders
+            const saved = savedPrizeResults[idx];
+            // const chosen = saved ?? String(item.number ?? "").slice(0, 4);
+            const chosen = saved != null ? saved : "";
+            const chars = chosen ? chosen.split("") : [];
+
+            // build 4 digit-cards
+            for (let i = 0; i < 4; i++) {
+              const d = document.createElement("div");
+              d.className = "digit-card";
+              d.textContent = chars[i] ? chars[i] : "----";
+              digitsWrap.appendChild(d);
+            }
+
+            left.appendChild(label);
+            left.appendChild(digitsWrap);
+
+            const btn = document.createElement("button");
+            btn.className = "btn draw";
+            btn.dataset.idx = idx;
+            btn.textContent = saved ? "Re-draw" : "DRAW";
+
+            // DRAW / REDRAW handler according to the final spec
+            btn.addEventListener("click", () => {
+              btn.disabled = true;
+
+              // ALL digits should spin together first (replace content with random digits rapidly)
+              const digitsEls = digitsWrap.children;
+              // initialize to placeholders (visible)
+              digitsWrap.innerHTML = "";
+              for (let i = 0; i < 4; i++) {
+                const ph = document.createElement("div");
+                ph.className = "digit-card hidden";
+                ph.textContent = "----";
+                digitsWrap.appendChild(ph);
+              }
+              // animate in
+              setTimeout(() => {
+                Array.from(digitsWrap.children).forEach((el) => {
+                  el.classList.remove("hidden");
+                  el.classList.add("visible");
+                });
+              }, 40);
+
+              // Start spinning (random digits) for all cells
+              const spinIntervals = [];
+              setTimeout(() => {
+                for (let i = 0; i < 4; i++) {
+                  const el = digitsWrap.children[i];
+                  spinIntervals[i] = setInterval(() => {
+                    el.textContent = String(Math.floor(Math.random() * 10));
+                  }, 60);
+                }
+              }, 120); // small delay to ensure visible animation started
+
+              // Decide final chosenNumber:
+              const assigned = collectAssignedNumbers();
+              let finalNumberStr = "";
+              // If button was "DRAW" -> show configured prize number
+              // If button was "Re-draw" -> pick random from assignments (if available), otherwise fallback to configured
+              if (btn.textContent === "DRAW" && item.number !== "????") {
+                finalNumberStr = String(item.number ?? "");
+              } else {
+                if (assigned.length > 0)
+                  finalNumberStr =
+                    assigned[Math.floor(Math.random() * assigned.length)];
+                else finalNumberStr = String(item.number ?? "");
+              }
+              finalNumberStr = String(finalNumberStr);
+              // ensure at least 4 length (pad with spaces) and take first 4 chars
+              while (finalNumberStr.length < 4)
+                finalNumberStr = finalNumberStr + " ";
+              const finalChars = finalNumberStr.split("").slice(0, 4);
+
+              // Reveal schedule: based on your final spec:
+              // reveal1 at 2000ms, reveal2 at 4000ms, reveal3 at 7000ms, reveal4 at 7000ms (same time as 3)
+              // We'll use relative times from "start of spin" (t0)
+              const t0 = Date.now();
+              const revealTimes = [
+                t0 + revealDelays[0],
+                t0 + (revealDelays[0] + revealDelays[1]),
+                t0 + (revealDelays[0] + revealDelays[1] + revealDelays[2]),
+                t0 +
+                  (revealDelays[0] +
+                    revealDelays[1] +
+                    revealDelays[2] +
+                    revealDelays[3]),
+              ];
+              // But revealDelays is [2000,2000,3000,0]; so revealTimes produce 2s,4s,7s,7s - correct.
+
+              // schedule reveals
+              revealTimes.forEach((rt, i) => {
+                const delay = Math.max(0, rt - Date.now());
+                setTimeout(() => {
+                  // stop the spinner for this digit (clear interval) and set final
+                  clearInterval(spinIntervals[i]);
+                  const el = digitsWrap.children[i];
+                  if (el) {
+                    el.textContent =
+                      finalChars[i] !== undefined ? finalChars[i] : " ";
+                    el.classList.add("revealed");
+                  }
+                }, delay);
+              });
+
+              // After final reveal time (use last reveal time), set button to Re-draw and save result
+              const totalRevealTime =
+                revealTimes[revealTimes.length - 1] - Date.now();
+              setTimeout(() => {
+                // ensure all intervals cleared
+                spinIntervals.forEach((iv) => clearInterval(iv));
+                btn.disabled = false;
+                btn.textContent = "Re-draw";
+                // save chosen number (string) to prizeResults storage
+                savePrizeResult(idx, finalNumberStr);
+              }, totalRevealTime + 50); // small buffer
+            });
+
+            row.appendChild(left);
+            row.appendChild(btn);
+            winningResultsContainer.appendChild(row);
+          });
+        }
+
+        // Initial load of winning results and UI state
+        (function initWinningUI() {
+          const raw = localStorage.getItem("winningResults");
+          if (!raw) {
+            renderWinningResults([]);
+            return;
+          }
+          try {
+            const parsed = JSON.parse(raw);
+            winningResultsInput.value = JSON.stringify(parsed, null, 2);
+            renderWinningResults(parsed);
+          } catch (e) {
+            renderWinningResults([]);
+          }
+        })();
+
+        // expose load function for manual refresh if needed
+        window._reloadWinningUI = function () {
+          const raw = localStorage.getItem("winningResults");
+          if (!raw) return renderWinningResults([]);
+          try {
+            renderWinningResults(JSON.parse(raw));
+          } catch {
+            renderWinningResults([]);
+          }
+        };
+
+        // end IIFE
       })();
     </script>
   </body>
