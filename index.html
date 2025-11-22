@@ -114,24 +114,7 @@
         backface-visibility: hidden;
       }
 
-      /* digit-specific card (circle) */
-      .digit-card {
-        width: 72px;
-        height: 72px;
-        border-radius: 50%;
-        background: white;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 800;
-        font-size: 22px;
-        box-shadow: 0 8px 18px rgba(11, 18, 32, 0.07);
-        margin-right: 8px;
-        transform-origin: center;
-        backface-visibility: hidden;
-      }
-
-      /* spin reveal animation (appearance) */
+      /* spin reveal animation */
       @keyframes spinReveal {
         0% {
           transform: rotateY(360deg) scale(0.2);
@@ -146,15 +129,13 @@
           opacity: 1;
         }
       }
-      .digit-card.hidden {
+      .card.hidden {
         opacity: 0;
         transform: rotateY(360deg) scale(0.2);
       }
-      .digit-card.visible {
-        animation: spinReveal 0.5s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+      .card.visible {
+        animation: spinReveal 0.7s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
       }
-
-      /* small "spinner" text effect handled in JS (replacing content) */
 
       footer {
         margin-top: 18px;
@@ -182,8 +163,22 @@
         background: #3a9f5a;
       }
 
-      .btn.draw {
-        min-width: 120px;
+      /* Draw circular button (only draw button uses this) */
+      .btn.draw-circle {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        background: radial-gradient(circle, #8a1414, var(--accent));
+        box-shadow: 0 12px 28px rgba(106, 12, 12, 0.25);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+      }
+      .btn.draw-circle:hover {
+        transform: scale(1.06);
+        box-shadow: 0 18px 36px rgba(106, 12, 12, 0.32);
       }
 
       .set-title {
@@ -199,19 +194,196 @@
         margin-bottom: 10px;
       }
 
-      /* .prize-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        padding: 10px 0;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+      /* wedding subtle flourishes */
+      header::after {
+        content: "";
+        display: block;
+        height: 1px;
+        background: linear-gradient(90deg, rgba(106, 12, 12, 0.1), transparent);
+        margin-top: 12px;
       }
-      .prize-left {
+
+      /* Wedding Guide Block */
+      .guide-block {
+        margin-top: 20px;
+        padding: 16px;
+        border-radius: 14px;
+        background: linear-gradient(180deg, #fff, #fff7f7);
+        border: 1px solid rgba(138, 20, 20, 0.1);
+      }
+      .guide-title {
+        font-size: 20px;
+        color: var(--accent);
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+      .guide-step {
+        margin: 6px 0;
+        padding-left: 10px;
+      }
+
+      /* Namespaced with .result- to avoid conflicts */
+      .result-card {
+        background: var(--card);
+        border-radius: var(--radius);
+        box-shadow: 0 6px 20px rgba(106, 12, 12, 0.08);
+        padding: 24px;
+        max-width: 720px;
+        border-radius: 10px;
+        border: 1px solid rgba(106, 12, 12, 0.06);
+      }
+      .result-title {
         display: flex;
         gap: 12px;
         align-items: center;
-      } */
+        font-weight: 700;
+        color: var(--accent);
+        font-size: 18px;
+      }
+      .result-title .star {
+        font-size: 20px;
+      }
+      .result-text {
+        margin-top: 12px;
+        color: #333;
+        line-height: 1.5;
+        font-size: 15px;
+      }
+      .result-line {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        margin-top: 10px;
+      }
+      .result-bullet {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        background: #fff;
+        border: 1px solid rgba(106, 12, 12, 0.06);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--accent);
+        font-weight: 700;
+      }
+      .result-zh {
+        font-weight: 600;
+      }
+      .result-en {
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      @media (max-width: 600px) {
+        .result-card {
+          padding: 16px;
+        }
+        .result-title {
+          font-size: 16px;
+        }
+        .result-text {
+          font-size: 14px;
+        }
+        .result-line {
+          gap: 10px;
+        }
+        .result-bullet {
+          width: 28px;
+          height: 28px;
+          font-size: 13px;
+        }
+        .result-en {
+          font-size: 12px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+
+        header {
+          flex-direction: column;
+          text-align: center;
+        }
+
+        header img {
+          height: 70px;
+          margin-right: 0;
+        }
+
+        h1 {
+          font-size: 20px;
+        }
+
+        .wrap {
+          padding: 14px;
+        }
+      }
+      @media (max-width: 600px) {
+        .card {
+          width: 90px;
+          height: 48px;
+          font-size: 14px;
+        }
+
+        .numbers-grid {
+          gap: 6px;
+        }
+      }
+      @media (max-width: 600px) {
+        .guide-block {
+          padding: 12px;
+        }
+
+        .guide-title {
+          font-size: 18px;
+        }
+
+        .guide-step {
+          font-size: 14px;
+        }
+      }
+      @media (max-width: 600px) {
+        .list {
+          max-height: 300px;
+        }
+      }
+      @media (max-width: 600px) {
+        .btn.draw-circle {
+          width: 90px;
+          height: 90px;
+          font-size: 16px;
+        }
+      }
+
+      /* digit-specific card (circle) */
+      .digit-card {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: white;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 22px;
+        box-shadow: 0 8px 18px rgba(11, 18, 32, 0.07);
+        margin-right: 8px;
+        transform-origin: center;
+        backface-visibility: hidden;
+      }
+
+      .digit-card.hidden {
+        opacity: 0;
+        transform: rotateY(360deg) scale(0.2);
+      }
+      .digit-card.visible {
+        animation: spinReveal 0.5s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+      }
+
       .prize-row {
         display: flex;
         align-items: center;
@@ -239,16 +411,6 @@
         font-weight: 600;
         font-size: 1.05rem;
       }
-
-      /* Optional: add a small gold shimmer icon */
-      .prize-left .icon {
-        width: 26px;
-        height: 26px;
-        border-radius: 50%;
-        background: radial-gradient(circle, #f8e7bd, #e6c98f);
-        box-shadow: 0 0 6px rgba(230, 200, 140, 0.6);
-      }
-
       @media (max-width: 600px) {
         .digit-card {
           width: 58px;
@@ -267,8 +429,8 @@
           style="
             height: 100px;
             border-radius: 10px;
-            margin-right: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            margin-right: 12px;
           "
         />
         <div>
@@ -286,12 +448,13 @@
         </div>
       </header>
 
-      <!-- Guide block -->
-      <div class="guide-block" style="margin-top: 18px">
+      <!-- 🎉 Wedding Teaching Sample -->
+      <div class="guide-block">
         <div class="guide-title">💡 婚禮抽獎教學</div>
+
         <div class="guide-step">
-          ①「今天每位賓客都能抽取專屬的10個幸運號碼」。<br />Everyone gets 10
-          lucky numbers today!
+          ①「今天每位賓客都能抽取專屬的10個幸運號碼」。<br />
+          Everyone gets 10 lucky numbers today!
         </div>
         <div class="guide-step">
           ② 點選桌號 → 選擇您的名字。<br />Pick your table, choose your name.
@@ -300,19 +463,48 @@
           ③ 按下圓形「DRAW」按鈕, 所有獎號會像翻牌一樣旋轉揭曉。<br />Hit the
           round “DRAW” button — watch your numbers flip like magic!
         </div>
+        <div class="guide-step">
+          ④ 拍下您的所屬號碼。 諾兩人以上的可以各自分配你們的組合號碼。<br />Snap
+          a pic of your numbers. If you're a group, feel free to divide or
+          combine your numbers as you like.
+        </div>
+        <div class="guide-step">
+          ⑤ 稍後會揭曉若該組號碼內有中獎的數字，即可請賓客上台或前往兌獎區。<br />
+          When winning numbers are announced, come on stage or head to the prize
+          table to claim your reward!
+        </div>
+
+        <div style="margin-top: 10px; font-size: 17px; color: #7a4b4b">
+          🎀 可以掃碼送上您的祝福語。<br />
+          💌 You may also scan the QR code to share your heartfelt blessings.
+        </div>
+
+        <div style="text-align: center; margin-top: 12px">
+          <img
+            src="./qr.png"
+            alt="QR Code"
+            style="
+              width: 160px;
+              height: auto;
+              border-radius: 8px;
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            "
+          />
+        </div>
       </div>
 
-      <div class="layout" style="margin-top: 18px">
+      <div class="layout">
         <aside class="panel">
           <h3 style="margin-top: 0">Tables</h3>
           <div id="tablesList" class="list">
-            No data loaded. Use Upload / Paste JSON to load assignments.
+            Loading JSON or open the upload dropdown to add data.
           </div>
         </aside>
 
         <main class="panel">
           <h3 style="margin-top: 0">Names & Draw</h3>
           <div id="namesList" class="list"></div>
+
           <div style="margin-top: 14px">
             <h4 id="selectedNameHeader">Select a name to reveal numbers</h4>
             <div id="drawControls" style="margin-top: 8px"></div>
@@ -322,7 +514,6 @@
       </div>
 
       <footer>Good Luck!</footer>
-
       <!--  Winning Results Display -->
       <div
         style="
@@ -337,7 +528,7 @@
         <div id="winningResultsContainer" style="margin-top: 16px"></div>
       </div>
 
-      <!-- Settings dropdown -->
+      <!-- Upload / paste JSON is optional and hidden inside details -->
       <details style="margin-top: 12px">
         <!-- Search -->
         <div
@@ -398,7 +589,7 @@
         <div style="margin-top: 12px; display: flex; gap: 12px">
           <textarea
             id="pasteArea"
-            placeholder='Or paste assignments JSON here then click "Load JSON"'
+            placeholder='Or paste JSON here then click "Load JSON"'
           ></textarea>
           <div style="display: flex; flex-direction: column; gap: 8px">
             <button id="loadPaste" class="btn">Load JSON</button>
@@ -408,7 +599,6 @@
             </div>
           </div>
         </div>
-
         <!-- Winning Results JSON editor -->
         <div
           style="
